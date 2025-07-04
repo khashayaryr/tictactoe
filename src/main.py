@@ -102,7 +102,51 @@ class TicTacToe:
                         break
                     self.switch_turn()
 
+    def start_game_with_friend(self):
+        self.display_board()
+        first_player = input("Enter the first player name who will play with X: ")
+        second_player = input("Enter the second player name who will play with O: ")
+        while True:
+            print(f"{first_player}'s turn (X)")
+            position = int(input(f"{first_player}'s turn (X). Enter your move (1-9): "))
+            if self.make_move(position):
+                self.display_board()
+                if self.check_winner():
+                    print(f"Congratulation, {first_player} won!.")
+                    break
+                if self.is_board_full():
+                    print("It's a draw!")
+                    break
+                self.switch_turn()
+            print(f"{second_player}'s turn (O)")
+            position = int(input(f"{second_player}'s turn (O). Enter your move (1-9): "))
+            if self.make_move(position):
+                self.display_board()
+                if self.check_winner():
+                    print(f"Congratulation, {second_player} won!.")
+                    break
+                if self.is_board_full():
+                    print("It's a draw!")
+                    break
+                self.switch_turn()
+
 
 if __name__ == "__main__":
     game = TicTacToe()
-    game.start_game_with_computer()
+    while True:
+        game_type = input(f"""
+                Welcome to the Tic Tac Toe game.
+                Choose how do you want to play the game?
+                1 - To play with computer.
+                2- To play with your friend.
+                """)
+        if game_type == '1':
+            game.start_game_with_computer()
+            break
+        elif game_type == '2':
+            game.start_game_with_friend()
+            break
+        else:
+            print("Wrong choice. Choose between 1 or 2.")
+            continue
+
