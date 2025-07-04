@@ -16,11 +16,15 @@ class TicTacToe:
         """)
 
     def make_move(self, position):
+        # Add a check for valid position range (1-9)
+        if not (1 <= position <= 9):
+            print("Invalid move. Position must be between 1 and 9. Try again.")
+            return False
         if self.board[position] == " ":
             self.board[position] = self.current_turn
             return True
         else:
-            print("Invalid move. Try again.")
+            print("Invalid move. That position is already taken. Try again.")
             return False
 
     def switch_turn(self):
@@ -51,84 +55,67 @@ class TicTacToe:
     def start_game_with_computer(self):
         self.display_board()
         self.user_symbol = input("Choose your symbol (X or O): ").upper()
-        if self.user_symbol not in ['X', 'O']:
-            print("Invalid choice.")
-            return self.start_game_with_computer()
+        while self.user_symbol not in ['X', 'O']: # Loop until valid symbol is chosen
+            print("Invalid choice. Please choose 'X' or 'O'.")
+            self.user_symbol = input("Choose your symbol (X or O): ").upper()
+
+        self.computer_symbol = 'O' if self.user_symbol == 'X' else 'X'
+        self.current_turn = 'X' # Always start with X
+
         while True:
-            if self.user_symbol == 'X':
-                position = int(input("Enter your move (1-9): "))
-                if not self.make_move(position):
-                    continue
+            if self.current_turn == self.user_symbol:
+                while True: # Loop for user's turn until valid move
+                    try:
+                        position = int(input(f"Your turn ({self.user_symbol}). Enter your move (1-9): "))
+                        if self.make_move(position):
+                            break # Exit the loop if move is valid
+                    except ValueError:
+                        print("Invalid input. Please enter a number between 1 and 9.")
                 self.display_board()
-                if self.check_winner():
-                    print(f"Congratulation! You won!")
-                    break
-                if self.is_board_full():
-                    print("It's a draw!")
-                    break
-                self.switch_turn()
+            else: # Computer's turn
                 print("Computer's turn...")
-                if self.random_move():
-                    self.display_board()
-                    if self.check_winner():
-                        print("Computer won!")
-                        break
-                    if self.is_board_full():
-                        print("It's a draw!")
-                        break
-                    self.switch_turn()
-            else:
-                print("Computer's turn...")
-                if self.random_move():
-                    if self.check_winner():
-                        self.display_board()
-                        print("Computer won!")
-                        break
-                    if self.is_board_full():
-                        self.display_board()
-                        print("It's a draw!")
-                        break
-                    self.switch_turn()
-                self.display_board()
-                position = int(input("Enter your move (1-9): "))
-                if self.make_move(position):
-                    if self.check_winner():
-                        self.display_board()
-                        print(f"Congratulation! You won!")
-                        break
-                    if self.is_board_full():
-                        self.display_board()
-                        print("It's a draw!")
-                        break
-                    self.switch_turn()
+                self.random_move()
+                self.display_board() # Display board after computer's move
+
+            if self.check_winner():
+                if self.current_turn == self.user_symbol:
+                    print(f"Congratulations! You won!")
+                else:
+                    print("Computer won!")
+                break
+            if self.is_board_full():
+                print("It's a draw!")
+                break
+
+            self.switch_turn() # Switch turn only after a valid move or computer's move
 
     def start_game_with_friend(self):
         self.display_board()
         first_player = input("Enter the first player name who will play with X: ")
         second_player = input("Enter the second player name who will play with O: ")
+        self.current_turn = 'X' # Always start with X
+
         while True:
-            print(f"{first_player}'s turn (X)")
-            position = int(input(f"{first_player}'s turn (X). Enter your move (1-9): "))
-            if self.make_move(position):
-                self.display_board()
-                if self.check_winner():
-                    print(f"Congratulation, {first_player} won!.")
-                    break
-                if self.is_board_full():
-                    print("It's a draw!")
-                    break
-                self.switch_turn()
-            print(f"{second_player}'s turn (O)")
-            position = int(input(f"{second_player}'s turn (O). Enter your move (1-9): "))
-            if self.make_move(position):
-                self.display_board()
-                if self.check_winner():
-                    print(f"Congratulation, {second_player} won!.")
-                    break
-                if self.is_board_full():
-                    print("It's a draw!")
-                    break
-                self.switch_turn()
+            current_player_name = first_player if self.current_turn == 'X' else second_player
+            current_player_symbol = self.current_turn
+
+            while True: # Loop for current player's turn until valid move
+                try:
+                    position = int(input(f"{current_player_name}'s turn ({current_player_symbol}). Enter your move (1-9): "))
+                    if self.make_move(position):
+                        break # Exit the loop if move is valid
+                except ValueError:
+                    print("Invalid input. Please enter a number between 1 and 9.")
+
+            self.display_board()
+            if self.check_winner():
+                print(f"Congratulations, {current_player_name} won!")
+                break
+            if self.is_board_full():
+                print("It's a draw!")
+                break
+
+            self.switch_turn() # Switch turn only after a valid move
 
 
 if __name__ == "__main__":
@@ -138,7 +125,7 @@ if __name__ == "__main__":
                 Welcome to the Tic Tac Toe game.
                 Choose how do you want to play the game?
                 1 - To play with computer.
-                2- To play with your friend.
+                2 - To play with your friend.
                 """)
         if game_type == '1':
             game.start_game_with_computer()
@@ -149,4 +136,3 @@ if __name__ == "__main__":
         else:
             print("Wrong choice. Choose between 1 or 2.")
             continue
-
